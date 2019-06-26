@@ -1,0 +1,40 @@
+1、安装laravel增强包
+【1】、packagist.org
+[2]https://github.com/barryvdh/laravel-ide-helper
+
+2、laravel创建表
+【1】、env里面修改配置
+【2】、创建表，例如要创建hd表，命令如下：
+ php artisan make:migration create_hd_table --create=hd
+ php artisan migrate
+
+3、兼容mysql5.6数据迁移
+【1】、在app/Providers/AppServiceProvider.php
+ [2]先use Schema;
+ [3]在boot方法添加，Schema::defaultStringLength(191);
+
+4、路由
+【1】路由文件夹里面新建route/admin/web.php，用于存放前端页面路由
+ 【2】在路由文件夹里面包含前端路由，include __DIR__.'/admin/web.php'
+
+ 5、通过model创建表
+ [1]php artisan make:model Model/Admin -m ,创建admin模型，在model文件夹里面，-m表示创建migration
+ [2]填充数据、
+ 在/database/factories/UserFactory.php
+ 修改------
+ [3]填充命令
+  (1)php artisan tinker
+  (2)factory(App\Model\Admin,3)->create();
+
+ 6、创建控制器命令
+ php artisan make:controller Admin/EntryController
+
+ 7、创造中间件
+ [1]php artisan make:middleware AdminMiddleware在handle里面写逻辑
+ [2]引入中间件在App\Http\Kernel.php写入，在$routeMiddleware写入'admin.auth'=>AdminMiddleware::class,其中admin.auth是标识，AdminMiddleware::class那个是文件路径
+ [3]在控制器里面__construct里面写入中间件，$this->middleware('admin.auth'),其中，admin.auth就是中间件的标识
+ [4]中间键排除，命令如：$this->middleware('admin.auth')->except(['login','admin']);----其中except里面就是添加排除的方法名
+
+ 8、错误信息
+ [1]、返回状态码，命令：abort
+ [2]、如根据状态码显示页面，要在/resources/views/errors,新增页面。如要新增404页面。则/resources/views/errors里面新增404.blade.php,则根据页面404状态码直接调用404错误页面。若需要显示500错误页面，则写入abort('500'),在/resources/views/errors写入500.blade.php，当页面状态码为500时直接调用500.blade.php
